@@ -45,9 +45,12 @@ namespace NoCropSquareBuck
 
         private void btnDst_Click(object sender, EventArgs e)
         {
-            //To ease folder creation inside a same directory
-            if (_preProcessDst != null)
+            //To ease folder creation inside a same directory (after performing processing once, to create folder beside last one)
+            if (!string.IsNullOrWhiteSpace(_preProcessDst))
+            {
                 folderBrowserDialog2.SelectedPath = Utility.GetParentDirectoryOrCurrent(_preProcessDst);
+                _preProcessDst = null;
+            }
 
             if (folderBrowserDialog2.ShowDialog(this) != DialogResult.OK) return;
 
