@@ -19,7 +19,8 @@ namespace NoCropSquareBuck
                 return Encoding.ASCII.GetString(pi.Value);
             if (pi.Type == 3)
                 return (pi.Value[0] << 8) | pi.Value[1];
-            if (pi.Type == 3)
+#warning 4????
+            if (pi.Type == 3) //https://docs.microsoft.com/en-us/dotnet/api/system.drawing.imaging.propertyitem.type?view=dotnet-plat-ext-3.1
                 return (pi.Value[0] << 24)| (pi.Value[1] << 16)| (pi.Value[2] << 8) | pi.Value[3];
             return "UnProcessed";
         }

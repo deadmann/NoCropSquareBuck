@@ -27,6 +27,11 @@ namespace NoCropSquareBuck
         private Color _backColor;
         private string _src;
         private string _dst;
+        /// <summary>
+        /// used to select parent folder when click on open destination dialog, right after processing a folder,
+        /// Allow to easily create NewFolder, otherwise the folder will be create inside the last processed folder
+        /// </summary>
+        private string _preProcessDst; 
 
         private void btnSrc_Click(object sender, EventArgs e)
         {
@@ -34,30 +39,50 @@ namespace NoCropSquareBuck
 
             _src=folderBrowserDialog1.SelectedPath;
             lblSrc.Text = _src;
+
+            progressBar1.Value = 0;
         }
 
         private void btnDst_Click(object sender, EventArgs e)
         {
+            //To ease folder creation inside a same directory
+            if (_preProcessDst != null)
+                folderBrowserDialog2.SelectedPath = Utility.GetParentDirectoryOrCurrent(_preProcessDst);
+
             if (folderBrowserDialog2.ShowDialog(this) != DialogResult.OK) return;
 
             _dst = folderBrowserDialog2.SelectedPath;
             lblDst.Text = _dst;
+
+            progressBar1.Value = 0;
         }
 
         private void btnNoCrop_Click(object sender, EventArgs e)
         {
+            string pathError="Requested path is invalid.";
             if (string.IsNullOrWhiteSpace(_src) || !Directory.Exists(_src))
             {
-                MessageBox.Show("Directory does not exists");
+                pathError = "Source directory does not exists";
             }
-            if (string.IsNullOrWhiteSpace(_dst))
+            else if (string.IsNullOrWhiteSpace(_dst))
             {
-                MessageBox.Show("Directory does not exists");
+                pathError = "Destination directory does not exists";
             }
             else if(!Directory.Exists(_dst))
             {
                 Directory.CreateDirectory(_dst);
             }
+
+            if (string.IsNullOrWhiteSpace(_src)
+                || string.IsNullOrWhiteSpace(_dst)
+                || !Directory.Exists(_src)
+                || !Directory.Exists(_dst))
+            {
+                MessageBox.Show(pathError);
+                return;
+            }
+
+            _preProcessDst = _dst;
 
             btnDst.Enabled = false;
             btnSrc.Enabled = false;
@@ -215,6 +240,7 @@ namespace NoCropSquareBuck
 
         private void btnBackColor_Click(object sender, EventArgs e)
         {
+            progressBar1.Value = 0;
             if (colorDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 lblBackColor.Text = colorDialog1.Color.Name;
